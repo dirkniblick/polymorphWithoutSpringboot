@@ -57,10 +57,12 @@ class HibernatePolymorphApplicationTests {
 
         PropertyHolder namePropertyHolder = new PropertyHolder();
         namePropertyHolder.setId(1L);
-        namePropertyHolder.setProperty(nameProperty);
-
         save(namePropertyHolder);
         System.out.printf("Created: %s%n", namePropertyHolder);
+
+        namePropertyHolder.setProperty(nameProperty);
+        update(namePropertyHolder);
+        System.out.printf("Updated: %s%n", namePropertyHolder);
 
         assertThat(namePropertyHolder.getId()).isNotNull();
 
@@ -93,11 +95,14 @@ class HibernatePolymorphApplicationTests {
         PropertyRepository propertyRepository = new PropertyRepository();
         propertyRepository.setId(1L);
 
+        save(propertyRepository);
+        System.out.printf("Created: %s%n", propertyRepository);
+
         propertyRepository.getProperties().add(ageProperty);
         propertyRepository.getProperties().add(nameProperty);
 
-        save(propertyRepository);
-        System.out.printf("Created: %s%n", propertyRepository);
+        update(propertyRepository);
+        System.out.printf("Updated: %s%n", propertyRepository);
 
         assertThat(propertyRepository.getId()).isNotNull();
 
@@ -115,6 +120,14 @@ class HibernatePolymorphApplicationTests {
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
         entityManager.persist(object);
+        transaction.commit();
+    }
+
+    void update(Object object) {
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+        entityManager.clear();
+        entityManager.merge(object);
         transaction.commit();
     }
 
